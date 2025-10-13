@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_learning_1/UI/profile.dart';
+import 'package:flutter_learning_1/UI/posts_list.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       title: '',
       theme: ThemeData.light(),
       themeMode: ThemeMode.system,
-      home: const ProfileScreen(),
+      home: const PostsListScreen(),
     );
   }
 }
