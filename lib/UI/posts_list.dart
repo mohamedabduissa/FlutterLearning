@@ -17,6 +17,7 @@ class PostsListScreen extends StatefulWidget {
 }
 
 class _PostsListScreenState extends State<PostsListScreen> {
+  late Future<List<Post>> _futurePosts;
   final Set<int> _bookmarkedPosts = {};
 
   Future<List<Post>> fetchPosts() async {
@@ -57,6 +58,7 @@ class _PostsListScreenState extends State<PostsListScreen> {
   @override
   void initState() {
     super.initState();
+    _futurePosts = fetchPosts();
   }
 
   @override
@@ -64,7 +66,7 @@ class _PostsListScreenState extends State<PostsListScreen> {
     return Scaffold(
       appBar: AppBar(title: Text('All Posts')),
       body: FutureBuilder<List<Post>>(
-        future: fetchPosts(),
+        future: _futurePosts,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator(backgroundColor: Colors.blue));
