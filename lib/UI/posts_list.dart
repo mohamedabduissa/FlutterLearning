@@ -29,11 +29,7 @@ class _PostsListScreenState extends State<PostsListScreen> {
           'Accept': 'application/json', // Tell the server we want JSON
     };
 
-    print("Fetching data from $url with headers..."); // A print statement for debugging
-
     final response = await http.get(url, headers: headers);
-
-    print("Received response with status code: ${response.statusCode}"); // Debugging
 
 
     if (response.statusCode == 200) {
