@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_learning_1/UI/profile.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
       title: '',
       theme: ThemeData.light(),
       themeMode: ThemeMode.system,
-      home: const Text("Hello World"),
+      home: const ProfileScreen(),
     );
   }
 }
