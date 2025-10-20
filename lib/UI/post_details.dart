@@ -9,23 +9,15 @@ class PostDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Post Details'),
-      ),
-      body: Padding(
+      appBar: AppBar(title: Text('Post Details')),
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              post.title,
-              style: Theme.of(context).textTheme.headlineLarge,
-            ),
+            Text(post.title, style: Theme.of(context).textTheme.titleLarge),
             SizedBox(height: 10),
-            Text(
-              post.body,
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+            Text(post.body, style: Theme.of(context).textTheme.titleLarge),
           ],
         ),
       ),

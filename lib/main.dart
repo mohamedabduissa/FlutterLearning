@@ -12,9 +12,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '',
-      theme: ThemeData.light(),
       themeMode: ThemeMode.system,
+      debugShowCheckedModeBanner: false,
+      title: 'Posts Demo',
+      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo), useMaterial3: true),
       home: const PostsListScreen(),
     );
   }

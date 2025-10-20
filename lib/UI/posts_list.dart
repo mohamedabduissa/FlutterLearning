@@ -4,16 +4,11 @@ import 'package:flutter_learning_1/UI/post_details.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-
-
-
-
 class PostsListScreen extends StatefulWidget {
   const PostsListScreen({super.key});
 
   @override
   State<PostsListScreen> createState() => _PostsListScreenState();
-
 }
 
 class _PostsListScreenState extends State<PostsListScreen> {
@@ -22,35 +17,25 @@ class _PostsListScreenState extends State<PostsListScreen> {
 
   Future<List<Post>> fetchPosts() async {
     final url = Uri.parse('https://jsonplaceholder.typicode.com/posts');
-    
     // Keep the User-Agent header to avoid 403 Forbidden errors
     final headers = {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
-          'Accept': 'application/json', // Tell the server we want JSON
+      'Accept': 'application/json', // Tell the server we want JSON
     };
+    try {
+      final response = await http.get(url, headers: headers).timeout(const Duration(seconds: 10));
 
-    final response = await http.get(url, headers: headers);
-
-
-    if (response.statusCode == 200) {
-      // 1. Check the Content-Type header from the server's response
-      final contentType = response.headers['content-type'];
-      
-      // Using startsWith is robust, as it also matches 'application/json; charset=utf-8'
-      if (contentType != null && contentType.startsWith('application/json')) {
-        // 2. If it's JSON, parse it as usual
+      if (response.statusCode == 200) {
         List<dynamic> jsonResponse = jsonDecode(response.body);
         return jsonResponse.map((post) => Post.fromJson(post)).toList();
       } else {
-        // 3. If it's not JSON, throw a specific error
-        throw Exception('Invalid content type: Expected application/json but got ${contentType ?? 'none'}.');
+        // Handle non-200 status codes as before
+        throw Exception('Failed to load posts. Status code: ${response.statusCode}');
       }
-    } else {
-      // Handle non-200 status codes as before
-      throw Exception('Failed to load posts. Status code: ${response.statusCode}');
+    } on http.ClientException catch (e) {
+      throw Exception('Network client error: $e');
     }
   }
-  
+
   @override
   void initState() {
     super.initState();
@@ -65,9 +50,23 @@ class _PostsListScreenState extends State<PostsListScreen> {
         future: _futurePosts,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator(backgroundColor: Colors.blue));
+            return Center(child: CircularProgressIndicator(backgroundColor: Theme.of(context).colorScheme.scrim));
           } else if (snapshot.hasError) {
-            return Center(child: Text('Failed to load posts. Please try again.'));
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Failed to load posts. Please try again.'),
+                  const SizedBox(height: 8),
+                  FilledButton(
+                    onPressed: () => setState(() {
+                      _futurePosts = fetchPosts();
+                    }),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
           } else if (snapshot.hasData) {
             final posts = snapshot.data!;
             return ListView.builder(
@@ -77,14 +76,10 @@ class _PostsListScreenState extends State<PostsListScreen> {
                 final isBookmarked = _bookmarkedPosts.contains(post.id);
 
                 return ListTile(
-                  title: Text(post.title),
+                  title: Text(post.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+                  subtitle: Text(post.body, maxLines: 1, overflow: TextOverflow.ellipsis),
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PostDetailsScreen(post: post),
-                      ),
-                    );
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => PostDetailsScreen(post: post)));
                   },
                   trailing: IconButton(
                     icon: Icon(
