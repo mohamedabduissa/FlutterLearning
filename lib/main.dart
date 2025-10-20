@@ -1,21 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_learning_1/UI/profile.dart';
+import 'package:flutter_learning_1/ui/profile.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
+import 'models/task_model.dart';
+import 'providers/task_provider.dart';
+import 'ui/home.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final appDocumentDir = await getApplicationDocumentsDirectory();
+  await Hive.initFlutter(appDocumentDir.path);
+  Hive.registerAdapter(TaskAdapter());
+  await Hive.openBox<Task>(tasksBoxName);
+
+  runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
-      title: '',
-      theme: ThemeData.light(),
+      title: 'ToDo App',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(brightness: Brightness.light, primarySwatch: Colors.indigo, useMaterial3: true),
+      darkTheme: ThemeData(brightness: Brightness.dark, primarySwatch: Colors.amber, useMaterial3: true),
       themeMode: ThemeMode.system,
-      home: const ProfileScreen(),
+      home: const HomeScreen(),
     );
   }
 }
