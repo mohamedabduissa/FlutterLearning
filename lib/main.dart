@@ -1,22 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_learning_1/UI/posts_list.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
+import 'models/task_model.dart';
+import 'providers/task_provider.dart';
+import 'ui/home.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final appDocumentDir = await getApplicationDocumentsDirectory();
+  await Hive.initFlutter(appDocumentDir.path);
+  Hive.registerAdapter(TaskAdapter());
+  await Hive.openBox<Task>(tasksBoxName);
+
+  runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
-      themeMode: ThemeMode.system,
+      title: 'ToDo App',
       debugShowCheckedModeBanner: false,
-      title: 'Posts Demo',
+      themeMode: ThemeMode.system,
       theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo), useMaterial3: true),
-      home: const PostsListScreen(),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.amber, brightness: Brightness.dark),
+        useMaterial3: true,
+      ),
+      home: const HomeScreen(),
     );
   }
 }
