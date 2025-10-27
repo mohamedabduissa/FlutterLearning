@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_learning_1/ui/profile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
@@ -25,9 +24,12 @@ class MyApp extends ConsumerWidget {
     return MaterialApp(
       title: 'ToDo App',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(brightness: Brightness.light, primarySwatch: Colors.indigo, useMaterial3: true),
-      darkTheme: ThemeData(brightness: Brightness.dark, primarySwatch: Colors.amber, useMaterial3: true),
       themeMode: ThemeMode.system,
+      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo), useMaterial3: true),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.amber, brightness: Brightness.dark),
+        useMaterial3: true,
+      ),
       home: const HomeScreen(),
     );
   }

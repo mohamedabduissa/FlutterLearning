@@ -13,7 +13,7 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('ToDo App')),
       body: tasks.isEmpty
-          ? const Center(child: Text('Not Found tasks now'))
+          ? const Center(child: Text('No tasks yet'))
           : ListView.builder(
               itemCount: tasks.length,
               itemBuilder: (context, index) {
@@ -21,7 +21,7 @@ class HomeScreen extends ConsumerWidget {
                 return ListTile(
                   title: Text(
                     task.title,
-                    style: TextStyle(decoration: task.isCompleted ? TextDecoration.lineThrough : null),
+                    style: TextStyle(decoration: task.isCompleted ? TextDecoration.lineThrough : TextDecoration.none),
                   ),
                   leading: Checkbox(
                     value: task.isCompleted,
@@ -66,11 +66,12 @@ class HomeScreen extends ConsumerWidget {
             TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
             TextButton(
               onPressed: () {
-                if (textController.text.isNotEmpty) {
+                final title = textController.text.trim();
+                if (title.isNotEmpty) {
                   if (task == null) {
-                    ref.read(taskProvider.notifier).addTask(textController.text);
+                    ref.read(taskProvider.notifier).addTask(title);
                   } else {
-                    ref.read(taskProvider.notifier).editTask(task.id, textController.text);
+                    ref.read(taskProvider.notifier).editTask(task.id, title);
                   }
                   Navigator.pop(context);
                 }
@@ -97,12 +98,15 @@ class HomeScreen extends ConsumerWidget {
                 ref.read(taskProvider.notifier).deleteTask(task.id);
                 Navigator.pop(context);
                 // SnackBar
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(' The task was deleted successfully "${task.title}" '),
-                    duration: const Duration(seconds: 2),
-                  ),
-                );
+                if(context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(' The task was deleted successfully "${task.title}" '),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                }
+                
               },
               child: const Text('Yes'),
             ),
