@@ -30,7 +30,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _submitLogin() async {
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState?.validate() ?? false) {
       await ref
           .read(authControllerProvider.notifier)
           .signInWithEmail(_emailController.text.trim(), _passwordController.text.trim());
@@ -41,15 +41,29 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     await ref.read(authControllerProvider.notifier).signInWithGoogle();
   }
 
+  String getFriendlyErrorMessage(String error) {
+    if (error.contains('wrong-password')) {
+      return 'Incorrect password. Please try again.';
+    } else if (error.contains('user-not-found')) {
+      return 'No account found with this email.';
+    } else if (error.contains('network-request-failed')) {
+      return 'Network error. Check your internet connection.';
+    } else {
+      // Fallback for unexpected errors
+      return 'An unexpected error occurred. Please try again later.';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
 
     ref.listen(authControllerProvider, (previous, next) {
       if (next.errorMessage != null && next.errorMessage != previous?.errorMessage) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(next.errorMessage!), backgroundColor: Colors.red));
+        // Show safe message to the user
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(getFriendlyErrorMessage(next.errorMessage!)), backgroundColor: Colors.red),
+        );
       }
     });
 

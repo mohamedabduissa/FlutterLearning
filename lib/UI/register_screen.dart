@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart'; 
-import '../providers/app_user_provider.dart'; 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/app_user_provider.dart';
 import '../controllers/auth_controller.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -32,14 +32,25 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   Future<void> _submitRegister() async {
     if (_formKey.currentState!.validate()) {
-      final success =
-          await ref.read(authControllerProvider.notifier).registerWithEmail(
-                _emailController.text.trim(),
-                _passwordController.text.trim(),
-              );
+      final success = await ref
+          .read(authControllerProvider.notifier)
+          .registerWithEmail(_emailController.text.trim(), _passwordController.text.trim());
       if (success && mounted) {
         Navigator.of(context).pop();
       }
+    }
+  }
+
+  String getFriendlyErrorMessage(String error) {
+    if (error.contains('wrong-password')) {
+      return 'Incorrect password. Please try again.';
+    } else if (error.contains('user-not-found')) {
+      return 'No account found with this email.';
+    } else if (error.contains('network-request-failed')) {
+      return 'Network error. Check your internet connection.';
+    } else {
+      // Fallback for unexpected errors
+      return 'An unexpected error occurred. Please try again later.';
     }
   }
 
@@ -49,11 +60,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
     ref.listen(authControllerProvider, (previous, next) {
       if (next.errorMessage != null && next.errorMessage != previous?.errorMessage) {
+        // Show safe message to the user
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(next.errorMessage!),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text(getFriendlyErrorMessage(next.errorMessage!)), backgroundColor: Colors.red),
         );
       }
     });
@@ -73,18 +82,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   controller: _emailController,
                   decoration: const InputDecoration(labelText: 'Email'),
                   keyboardType: TextInputType.emailAddress,
-                  validator: (value) => (value == null || !value.contains('@'))
-                      ? 'Enter a valid email'
-                      : null,
+                  validator: (value) => (value == null || !value.contains('@')) ? 'Enter a valid email' : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _passwordController,
                   decoration: const InputDecoration(labelText: 'Password'),
                   obscureText: true,
-                  validator: (value) => (value == null || value.length < 6)
-                      ? 'Password is too short (6+ characters)'
-                      : null,
+                  validator: (value) =>
+                      (value == null || value.length < 6) ? 'Password is too short (6+ characters)' : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -107,9 +113,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     ? const Center(child: CircularProgressIndicator())
                     : ElevatedButton(
                         onPressed: _submitRegister,
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                        ),
+                        style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
                         child: const Text('Register'),
                       ),
               ],
@@ -120,4 +124,3 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     );
   }
 }
-

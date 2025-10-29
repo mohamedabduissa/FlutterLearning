@@ -18,8 +18,7 @@ class FCMService {
 
     await _initLocalNotifications();
 
-    final token = await _fcm.getToken();
-    log("FCM Token: $token");
+    final _ = await _fcm.getToken();
 
     _setupListeners();
   }

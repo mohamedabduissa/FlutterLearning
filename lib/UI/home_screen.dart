@@ -34,7 +34,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             onPressed: () {
               ref.read(authControllerProvider.notifier).signOut();
             },
-          )
+          ),
         ],
       ),
       body: Column(
@@ -45,15 +45,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               padding: EdgeInsets.all(16.0),
               child: Center(child: CircularProgressIndicator()),
             ),
-            error: (e, s) => Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text('Error fetching user: $e'),
-            ),
+            error: (e, s) => Padding(padding: const EdgeInsets.all(16.0), child: Text('Error fetching user: $e')),
           ),
           const Divider(),
 
           Text('Screen Size (MediaQuery): ${MediaQuery.of(context).size.width.toStringAsFixed(0)}'),
-          
+
           Expanded(
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -77,12 +74,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         children: [
           CircleAvatar(
             radius: 30,
-            backgroundImage: (user?.photoUrl != null)
-                ? NetworkImage(user!.photoUrl!)
-                : null,
-            child: (user?.photoUrl == null)
-                ? const Icon(Icons.person, size: 30)
-                : null,
+            backgroundImage: (user?.photoUrl != null) ? NetworkImage(user!.photoUrl!) : null,
+            child: (user?.photoUrl == null) ? const Icon(Icons.person, size: 30) : null,
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -112,10 +105,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text(
-            ' Mobile Layout (List)',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
+          child: Text(' Mobile Layout (List)', style: Theme.of(context).textTheme.titleMedium),
         ),
         Expanded(
           child: asyncSnapshot.when(
@@ -138,10 +128,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text(
-            'Tablet Layout (Grid)',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
+          child: Text('Tablet Layout (Grid)', style: Theme.of(context).textTheme.titleMedium),
         ),
         Expanded(
           child: asyncSnapshot.when(
@@ -160,7 +147,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 itemCount: docs.length,
                 itemBuilder: (context, index) {
-                  final data = docs[index].data() as Map<String, dynamic>;
+                  final docData = docs[index].data();
+                  final data = docData is Map<String, dynamic> ? docData : <String, dynamic>{};
                   return Card(
                     elevation: 4,
                     child: Center(
@@ -185,7 +173,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (docs.isEmpty) {
       return const Center(child: Text('No data to add'));
     }
-    
+
     return ListView.builder(
       itemCount: docs.length,
       itemBuilder: (context, index) {
@@ -199,4 +187,3 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 }
-
